@@ -4,6 +4,6 @@
 		x:Class="App.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
 		Width="600" Height="400"
-        Title="App"
+        Title="{Binding Title}"
 		Content="{Binding Content}">
 </Window>

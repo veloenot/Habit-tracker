@@ -7,17 +7,17 @@ namespace App.ViewModels
 {
 	public class HabitSettingViewModel : ViewModelBase
 	{
-		string title;
-		string motivation;
-		DateTimeOffset startDate;
-		int duration;
+		string _title;
+		string _motivation;
+		DateTimeOffset _startDate;
+		int _duration;
 		
 		public HabitSettingViewModel()
 		{
-			title = "";
-			motivation = "";
-			startDate = DateTimeOffset.Now;
-			duration = 0;
+			_title = "";
+			_motivation = "";
+			_startDate = DateTimeOffset.Now;
+			_duration = 0;
 
 			IObservable<bool> canStart = this.WhenAnyValue(
 				x => x.Title, x => x.Motivation, x => x.Duration,
@@ -37,26 +37,26 @@ namespace App.ViewModels
 
 		public string Title
 		{
-			get => title;
-			set => this.RaiseAndSetIfChanged(ref title, value);
+			get => _title;
+			set => this.RaiseAndSetIfChanged(ref _title, value);
 		}
 
 		public string Motivation
 		{
-			get => motivation;
-			set => this.RaiseAndSetIfChanged(ref motivation, value);
+			get => _motivation;
+			set => this.RaiseAndSetIfChanged(ref _motivation, value);
 		}
 
 		public DateTimeOffset StartDate
 		{
-			get => startDate;
-			set => this.RaiseAndSetIfChanged(ref startDate, value);
+			get => _startDate;
+			set => this.RaiseAndSetIfChanged(ref _startDate, value);
 		}
 
 		public int Duration
 		{
-			get => duration;
-			set => this.RaiseAndSetIfChanged(ref duration, value);
+			get => _duration;
+			set => this.RaiseAndSetIfChanged(ref _duration, value);
 		}
 
 		public ReactiveCommand<Unit, Habit > StartTracking { get; }
