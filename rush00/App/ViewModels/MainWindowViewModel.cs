@@ -5,6 +5,7 @@ using System.Text;
 using System.Reactive;
 using System.Reactive.Linq;
 using ReactiveUI;
+using DynamicData.Binding;
 using App.Models;
 
 namespace App.ViewModels
@@ -35,17 +36,18 @@ namespace App.ViewModels
 		{
 			var vm = new HabitSettingViewModel();
 			Title = "Set new habit to track";
-			vm.StartTracking.Take(1).Subscribe(model =>
-			{
-				model.HabitChecks.AddRange(
-					Enumerable.Range(0, vm.Duration)
-					.Select(offset => new HabitCheck
-					{
-						Date = vm.StartDate.AddDays(offset + 1)
-					})
-				.ToList());
-				TrackHabit(model);
-			});
+			vm.StartTracking.Take(1)
+				.Subscribe(model =>
+				{
+					model.HabitChecks.AddRange(
+						Enumerable.Range(0, vm.Duration)
+						.Select(offset => new HabitCheck
+						{
+							Date = vm.StartDate.AddDays(offset + 1)
+						})
+					.ToList());
+					TrackHabit(model);
+				});
 			Content = vm;
 		}
 
@@ -53,6 +55,18 @@ namespace App.ViewModels
 		{
 			var vm = new HabitTrackingViewModel(habit.HabitChecks.OrderBy(x => x.Date));
 			Title = habit.Title;
+			vm.WhenPropertyChanged(x => x.IsFinished, false)
+				.Subscribe(x =>
+				{
+					FinishHabit();
+				});
+			Content = vm;
+		}
+
+		public void FinishHabit()
+		{
+			var vm = new CongratulationsViewModel();
+			Title = "Spasibo!";
 			Content = vm;
 		}
 	}

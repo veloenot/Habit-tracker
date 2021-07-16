@@ -4,8 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="App.Views.HabitCheckingView">
-  <CheckBox	Margin="4"
-  			IsChecked="{Binding IsChecked}"
+  <CheckBox	IsChecked="{Binding IsChecked}"
 			Content="{Binding Date, StringFormat=\{0:dd.MM.yyyy\}}"
 			IsThreeState="False" />
 </UserControl>

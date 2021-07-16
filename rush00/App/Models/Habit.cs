@@ -8,6 +8,6 @@ namespace App.Models
 		public string Title { get; set; }
 		public string Motivation { get; set; }
 		public List<HabitCheck> HabitChecks { get; set; }
-		public bool IsFinished { get; set; } = true;
+		public bool IsFinished { get; set; } = false;
 	}
 }
