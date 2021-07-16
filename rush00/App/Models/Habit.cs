@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace App.Models
 {
@@ -6,7 +7,7 @@ namespace App.Models
 	{
 		public string Title { get; set; }
 		public string Motivation { get; set; }
-		public HabitCheck[] HabitChecks { get; set; }
+		public List<HabitCheck> HabitChecks { get; set; }
 		public bool IsFinished { get; set; } = true;
 	}
 }

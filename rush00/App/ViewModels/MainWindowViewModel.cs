@@ -5,7 +5,7 @@ using System.Text;
 using System.Reactive;
 using System.Reactive.Linq;
 using ReactiveUI;
-using App.ViewModels;
+using App.Models;
 
 namespace App.ViewModels
 {
@@ -35,14 +35,25 @@ namespace App.ViewModels
 		{
 			var vm = new HabitSettingViewModel();
 			Title = "Set new habit to track";
-			vm.StartTracking.Take(1).Subscribe(x => TrackHabit());
+			vm.StartTracking.Take(1).Subscribe(model =>
+			{
+				model.HabitChecks.AddRange(
+					Enumerable.Range(0, vm.Duration)
+					.Select(offset => new HabitCheck
+					{
+						Date = vm.StartDate.AddDays(offset + 1)
+					})
+				.ToList());
+				TrackHabit(model);
+			});
 			Content = vm;
 		}
 
-		public void TrackHabit()
+		public void TrackHabit(Habit habit)
 		{
-			Content = new HabitTrackingViewModel();
-			Title = "An hour of .NET a day";
+			var vm = new HabitTrackingViewModel(habit.HabitChecks.OrderBy(x => x.Date));
+			Title = habit.Title;
+			Content = vm;
 		}
 	}
 }

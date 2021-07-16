@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reactive;
 using ReactiveUI;
 using App.Models;
@@ -30,7 +31,7 @@ namespace App.ViewModels
 			{
 				Title = Title.Trim(),
 				Motivation = Motivation.Trim(),
-				HabitChecks = new HabitCheck[Duration],
+				HabitChecks = new List<HabitCheck>(),
 				IsFinished = false
 			}, canStart);
 		}
