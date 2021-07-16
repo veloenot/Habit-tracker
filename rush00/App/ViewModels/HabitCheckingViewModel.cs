@@ -13,6 +13,7 @@ namespace App.ViewModels
 		{
 			IsChecked = habitCheck.IsChecked;
 			Date = habitCheck.Date;
+			HabitCheck = habitCheck;
 		}
 
 		public bool IsChecked
@@ -22,5 +23,7 @@ namespace App.ViewModels
 		}
 
 		public DateTimeOffset Date { get; }
+
+		public HabitCheck HabitCheck { get; }
 	}
 }

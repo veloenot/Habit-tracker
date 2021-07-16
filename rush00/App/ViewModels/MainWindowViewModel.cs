@@ -58,15 +58,15 @@ namespace App.ViewModels
 			vm.WhenPropertyChanged(x => x.IsFinished, false)
 				.Subscribe(x =>
 				{
-					FinishHabit();
+					FinishHabit(habit);
 				});
 			Content = vm;
 		}
 
-		public void FinishHabit()
+		public void FinishHabit(Habit habit)
 		{
-			var vm = new CongratulationsViewModel();
-			Title = "Spasibo!";
+			var vm = new CongratulationsViewModel(habit);
+			Title = habit.Title;
 			Content = vm;
 		}
 	}
