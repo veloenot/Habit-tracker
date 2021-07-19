@@ -6,7 +6,9 @@ using System.Reactive;
 using System.Reactive.Linq;
 using ReactiveUI;
 using DynamicData.Binding;
-using App.Models;
+using Microsoft.EntityFrameworkCore;
+using Data.Models;
+using Data;
 
 namespace App.ViewModels
 {
@@ -17,7 +19,7 @@ namespace App.ViewModels
 
         public MainWindowViewModel()
 		{
-			SetHabit();
+			TrackHabit();
 		}
 
 		public string? Title
@@ -35,39 +37,71 @@ namespace App.ViewModels
 		public void SetHabit()
 		{
 			var vm = new HabitSettingViewModel();
-			Title = "Set new habit to track";
-			vm.StartTracking.Take(1)
-				.Subscribe(model =>
+			
+			vm.StartTracking.Take(1).Subscribe(model =>
+			{
+				using (var context = new HabitDbContext())
 				{
-					model.HabitChecks.AddRange(
+					context.Habits.Add(model);
+					context.HabitChecks.AddRange(
 						Enumerable.Range(0, vm.Duration)
 						.Select(offset => new HabitCheck
 						{
-							Date = vm.StartDate.AddDays(offset + 1)
+							Date = vm.StartDate.AddDays(offset),
+							Habit = model,
+							IsChecked = false
 						})
-					.ToList());
-					TrackHabit(model);
-				});
+						.ToList());
+					context.SaveChanges();
+				}
+				TrackHabit();
+			});
+			
+			Title = "Set new habit to track";
 			Content = vm;
 		}
 
-		public void TrackHabit(Habit habit)
+		public void TrackHabit()
 		{
-			var vm = new HabitTrackingViewModel(habit.HabitChecks.OrderBy(x => x.Date));
-			Title = habit.Title;
-			vm.WhenPropertyChanged(x => x.IsFinished, false)
-				.Subscribe(x =>
+			using (var context = new HabitDbContext())
+			{
+				var habit = context.Habits
+					.Include(x => x.HabitChecks)
+					.FirstOrDefault(x => !x.IsFinished);
+
+				if (habit == null)
 				{
-					FinishHabit(habit);
-				});
-			Content = vm;
+					SetHabit();
+					return;
+				}
+
+				var vm = new HabitTrackingViewModel(habit.HabitChecks.OrderBy(x => x.Date));
+				vm.WhenPropertyChanged(x => x.IsFinished, false).Subscribe(FinishHabit);
+				
+				Title = habit.Title;
+				Content = vm;
+			}
 		}
 
-		public void FinishHabit(Habit habit)
+		public void FinishHabit(PropertyValue<HabitTrackingViewModel, bool> obj)
 		{
-			var vm = new CongratulationsViewModel(habit);
-			Title = habit.Title;
-			Content = vm;
+			if (obj.Sender.IsFinished)
+			{
+				using (var context = new HabitDbContext())
+				{
+					var habit = context.Habits
+						.Include(x => x.HabitChecks)
+						.FirstOrDefault(x => !x.IsFinished);
+
+					habit.IsFinished = true;
+					context.Habits.Update(habit);
+					context.SaveChanges();
+
+					var vm = new CongratulationsViewModel(habit);
+					Title = habit.Title;
+					Content = vm;
+				}
+			}
 		}
 	}
 }

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reactive;
 using ReactiveUI;
-using App.Models;
+using Data.Models;
 
 namespace App.ViewModels
 {

@@ -7,7 +7,8 @@ using System.Linq;
 using System.Reactive;
 using ReactiveUI;
 using DynamicData.Binding;
-using App.Models;
+using Data.Models;
+using Data;
 
 namespace App.ViewModels
 {
@@ -22,14 +23,22 @@ namespace App.ViewModels
 
 			foreach (var habitCheck in HabitChecks)
 			{
-				habitCheck.WhenPropertyChanged(x => x.IsChecked, false)
-					.Subscribe(x =>
-					{
-						x.Sender.HabitCheck.IsChecked = x.Value;	
+				habitCheck.WhenPropertyChanged(x => x.IsChecked, false).Subscribe(HandleHabitCheckChanged);
+			}
+		}
 
-						if (HabitChecks.Last().IsChecked == true)
-							IsFinished = true;
-					});
+		private void HandleHabitCheckChanged(PropertyValue<HabitCheckingViewModel, bool> obj)
+		{
+			using (var context = new HabitDbContext())
+			{			
+				var habitCheck = obj.Sender.HabitCheck;	
+				habitCheck.IsChecked = obj.Value;
+				context.HabitChecks.Update(habitCheck);
+				context.SaveChanges();
+
+				if (this.HabitChecks.Last().IsChecked == true)
+					this.IsFinished = true;
+				
 			}
 		}
 
